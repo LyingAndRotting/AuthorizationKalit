@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="bootstrap.min.css" rel="stylesheet">
+    <title>Авторизуйся!</title>
+    <style>
+        .main-container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .error-message {
+            color: red;
+            margin-top: 10px;
+            display: none;
+        }
+        .success-message {
+            color: green;
+            margin-top: 10px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container text-center">
+        <h1 class="mb-4">Авторизация</h1>
+        <div class="input-group mb-3">
+            <input type="text" id="login" class="form-control" placeholder="Логин">
+        </div>
+        <div class="input-group mb-3">
+            <input type="password" id="password" class="form-control" placeholder="Пароль">
+        </div>
+        <div class="d-grid gap-2">
+            <button class="btn btn-primary" onclick="handleLogin()">Войти</button>
+            <button class="btn btn-secondary" onclick="handleRegister()">Зарегистрироваться</button>
+        </div>
+        <div id="errorMessage" class="error-message"></div>
+        <div id="successMessage" class="success-message"></div>
+    </div>
+    <script src="auth.js"></script>
+    <script>
+        function showMessage(message, isError = false) {
+            const errorElement = document.getElementById('errorMessage');
+            const successElement = document.getElementById('successMessage');
+            
+            if (isError) {
+                errorElement.textContent = message;
+                errorElement.style.display = 'block';
+                successElement.style.display = 'none';
+            } else {
+                successElement.textContent = message;
+                successElement.style.display = 'block';
+                errorElement.style.display = 'none';
+            }
+        }
+
+        async function handleLogin() {
+            const name = document.getElementById('login').value;
+            const password = document.getElementById('password').value;
+
+            if (!name || !password) {
+                showMessage('Пожалуйста, заполните все поля', true);
+                return;
+            }
+
+            const result = await window.login(name, password);
+            if (result.success) {
+                showMessage(result.message);
+                setTimeout(() => window.location.href = '/api/auth/main', 1000);
+            } else {
+                showMessage(result.message, true);
+            }
+        }
+
+        async function handleRegister() {
+            const name = document.getElementById('login').value;
+            const password = document.getElementById('password').value;
+
+            if (!name || !password) {
+                showMessage('Пожалуйста, заполните все поля', true);
+                return;
+            }
+
+            const result = await window.register(name, password);
+            if (result.success) {
+                showMessage(result.message);
+            } else {
+                showMessage(result.message, true);
+            }
+        }
+    </script>
+</body>
+</html>

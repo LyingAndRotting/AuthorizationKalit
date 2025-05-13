@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="bootstrap.min.css" rel="stylesheet">
+    <title>Главная страница</title>
+    <style>
+        .main-container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .welcome-message {
+            margin-bottom: 30px;
+        }
+        .error-message {
+            color: red;
+            margin-top: 10px;
+            display: none;
+        }
+        .success-message {
+            color: green;
+            margin-top: 10px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container text-center">
+        <h1 class="welcome-message">Добро пожаловать, <span id="username"></span>!</h1>
+        <p class="mb-4">Вы успешно авторизованы в системе.</p>
+        <div class="d-grid gap-2">
+            <button class="btn btn-danger" onclick="handleLogout()">Выйти</button>
+        </div>
+        <div id="errorMessage" class="error-message"></div>
+        <div id="successMessage" class="success-message"></div>
+    </div>
+    <script src="auth.js"></script>
+    <script>
+        window.onload = async function() {
+            const isAuthorized = await window.checkAuth();
+            if (!isAuthorized) {
+                window.location.href = '/';
+            } else {
+                const userResult = await window.getUser();
+                if (userResult.success) {
+                    var user = document.getElementById("username");
+                    user.textContent = userResult.message;
+                }
+            }
+        };
+
+        function showMessage(message, isError = false) {
+            const errorElement = document.getElementById('errorMessage');
+            const successElement = document.getElementById('successMessage');
+            
+            if (isError) {
+                errorElement.textContent = message;
+                errorElement.style.display = 'block';
+                successElement.style.display = 'none';
+            } else {
+                successElement.textContent = message;
+                successElement.style.display = 'block';
+                errorElement.style.display = 'none';
+            }
+        }
+
+        async function handleLogout() {
+            const result = await window.logout();
+            if (result.success) {
+                showMessage(result.message);
+                setTimeout(() => window.location.href = '/', 1000);
+            } else {
+                showMessage(result.message, true);
+            }
+        }
+    </script>
+</body>
+</html> 
